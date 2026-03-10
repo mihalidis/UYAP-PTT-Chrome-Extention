@@ -1,0 +1,44 @@
+{
+  "manifest_version": 3,
+  "name": "UYAP Tebligat PTT Takip",
+  "version": "1.0.0",
+  "description": "UYAP tebligat ekranındaki PTT barkod numarasını okuyup gönderi durumunu sorgular.",
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://*.uyap.gov.tr/*",
+    "https://gonderitakip.ptt.gov.tr/*",
+    "https://track.ptt.gov.tr/*",
+    "https://api.ptt.gov.tr/*",
+    "http://localhost/*",
+    "file://*/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.uyap.gov.tr/*",
+        "http://localhost/*",
+        "file://*/*"
+      ],
+      "js": ["content.js"]
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

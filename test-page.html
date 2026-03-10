@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <title>UYAP Test Sayfası — Sahte Tebligat</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: #f0f2f5;
+      padding: 30px;
+      color: #333;
+    }
+    h2 { margin-bottom: 6px; color: #c0392b; }
+    p.desc { font-size: 13px; color: #666; margin-bottom: 24px; }
+
+    .scenario-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      padding: 8px 16px;
+      border: 1px solid #dee2e6;
+      border-radius: 20px;
+      background: white;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .tab-btn.active {
+      background: #c0392b;
+      color: white;
+      border-color: #c0392b;
+    }
+
+    /* Sahte PDF viewer container */
+    .fake-viewer {
+      background: white;
+      border: 1px solid #dee2e6;
+      border-radius: 12px;
+      padding: 24px;
+      max-width: 720px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      position: relative;
+    }
+
+    .viewer-toolbar {
+      background: #495057;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 8px 8px 0 0;
+      font-size: 12px;
+      margin: -24px -24px 20px -24px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .viewer-toolbar span { opacity: 0.7; }
+
+    /* Tebligat belgesi görünümü */
+    .doc-header {
+      text-align: center;
+      border-bottom: 2px solid #333;
+      padding-bottom: 16px;
+      margin-bottom: 20px;
+    }
+    .doc-header h3 { font-size: 15px; text-transform: uppercase; letter-spacing: 1px; }
+    .doc-header p { font-size: 12px; color: #555; margin-top: 4px; }
+
+    .doc-field {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 10px;
+      font-size: 13px;
+    }
+    .doc-field-label {
+      font-weight: 700;
+      min-width: 160px;
+      color: #444;
+    }
+
+    /* rpv-core__text-layer — gerçek UYAP'taki class bu */
+    .rpv-core__text-layer {
+      position: relative;
+    }
+    .rpv-core__text-layer-text {
+      /* Gerçek eklentide bu span'lar invisible overlay olarak PDF üstünde durur */
+      font-family: monospace;
+      font-size: 0; /* Görünmez ama DOM'da var — gerçeğini simüle ediyoruz */
+      position: absolute;
+      pointer-events: none;
+    }
+
+    /* Görsel barkod kutusu */
+    .barkod-box {
+      background: #f8f9fa;
+      border: 1px dashed #adb5bd;
+      border-radius: 6px;
+      padding: 8px 14px;
+      display: inline-block;
+      font-family: "Courier New", monospace;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: #333;
+      margin-top: 4px;
+    }
+
+    /* Test durumu paneli */
+    .test-panel {
+      background: #e8f5e9;
+      border: 1px solid #a5d6a7;
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin-top: 20px;
+      max-width: 720px;
+      font-size: 13px;
+    }
+    .test-panel h4 { color: #2e7d32; margin-bottom: 8px; font-size: 13px; }
+    .test-panel code {
+      background: #c8e6c9;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 12px;
+    }
+    .test-panel ul { margin: 8px 0 0 16px; }
+    .test-panel li { margin-bottom: 4px; color: #444; }
+
+    .warning-panel {
+      background: #fff8e1;
+      border: 1px solid #ffe082;
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin-top: 12px;
+      max-width: 720px;
+      font-size: 13px;
+      color: #5d4037;
+    }
+
+    .current-barkod {
+      font-size: 12px;
+      color: #6c757d;
+      margin-top: 16px;
+    }
+    .current-barkod strong { color: #c0392b; font-family: monospace; }
+  </style>
+</head>
+<body>
+
+<h2>📬 UYAP Tebligat — Test Sayfası</h2>
+<p class="desc">
+  Bu sayfa Chrome eklentisini UYAP erişimi olmadan test etmek için hazırlanmıştır.
+  Gerçek UYAP'taki <code>.rpv-core__text-layer-text</code> DOM yapısını simüle eder.
+</p>
+
+<!-- Senaryo seçici -->
+<div class="scenario-tabs">
+  <button class="tab-btn active" onclick="loadScenario('normal')">📦 Normal Barkod</button>
+  <button class="tab-btn" onclick="loadScenario('upu')">🌍 UPU Format (RR...TR)</button>
+  <button class="tab-btn" onclick="loadScenario('coklu')">📋 Çoklu Numara</button>
+  <button class="tab-btn" onclick="loadScenario('yok')">❌ Barkod Yok</button>
+</div>
+
+<!-- Sahte PDF viewer -->
+<div class="fake-viewer" id="fakeViewer">
+  <div class="viewer-toolbar">
+    📄 <span>tebligat_20240315_001.pdf — Sayfa 1/1</span>
+  </div>
+
+  <div class="doc-header">
+    <h3>T.C. İSTANBUL ANADOLU ADLİYESİ</h3>
+    <p>TEBLİGAT BELGESİ</p>
+  </div>
+
+  <!-- Görsel içerik -->
+  <div class="doc-field">
+    <span class="doc-field-label">Dosya No:</span>
+    <span>2024/12345 E.</span>
+  </div>
+  <div class="doc-field">
+    <span class="doc-field-label">Tebligat Tarihi:</span>
+    <span>15.03.2024</span>
+  </div>
+  <div class="doc-field">
+    <span class="doc-field-label">Alıcı:</span>
+    <span>ÖRNEK KİŞİ</span>
+  </div>
+  <div class="doc-field">
+    <span class="doc-field-label">PTT Barkod No:</span>
+    <div>
+      <div class="barkod-box" id="visibleBarkod">2789396419841</div>
+    </div>
+  </div>
+  <div class="doc-field">
+    <span class="doc-field-label">Tebligat Türü:</span>
+    <span>Adi Tebligat</span>
+  </div>
+  <div class="doc-field">
+    <span class="doc-field-label">Gönderen Birim:</span>
+    <span>İstanbul Anadolu 3. Asliye Hukuk Mahkemesi</span>
+  </div>
+
+  <!-- 
+    GERÇEKLEŞTİRİLEN KISIM:
+    rpv-core__text-layer-text span'ları gerçekte font-size:0 veya 
+    invisible overlay olur, ama DOM'da kesinlikle bulunur.
+    Eklentinin content.js'i bunları okur.
+  -->
+  <div class="rpv-core__text-layer" id="textLayer">
+    <!-- Bu span'lar eklenti tarafından okunacak -->
+  </div>
+
+  <p class="current-barkod">
+    DOM'daki barkod: <strong id="domBarkodDisplay">2789396419841</strong>
+  </p>
+</div>
+
+<!-- Test rehberi -->
+<div class="test-panel">
+  <h4>✅ Test Adımları</h4>
+  <ul>
+    <li>Bu sayfayı Chrome'da <code>file:///</code> veya local server ile aç</li>
+    <li>Chrome eklentisini <code>chrome://extensions/</code>'dan yükle (geliştirici modu)</li>
+    <li>Sağ üstteki 📬 ikon'a tıkla → popup açılır</li>
+    <li>"Tebligat Numarasını Oku ve Sorgula" butonuna bas</li>
+    <li>Barkod DOM'dan okunur → PTT sorgusu yapılır</li>
+  </ul>
+</div>
+
+<div class="warning-panel">
+  ⚠️ <strong>Önemli:</strong> Bu sayfa <code>file://</code> protokolünde açılırsa eklentinin
+  host_permissions'ı devreye girmeyebilir. En sağlıklısı <code>manifest.json</code>'a
+  <code>"&lt;all_urls&gt;"</code> ekleyip geliştirici modunda test etmektir
+  (aşağıda açıklanmış).
+</div>
+
+<script>
+  const SCENARIOS = {
+    normal: {
+      label: "2789396419841",
+      spans: ["T.C. İSTANBUL ANADOLU ADLİYESİ", "TEBLİGAT BELGESİ", "Dosya No: 2024/12345 E.", "PTT Barkod No:", "2789396419841", "Tebligat Tarihi: 15.03.2024"],
+    },
+    upu: {
+      label: "RR123456789TR",
+      spans: ["MAHKEME TEBLİGATI", "Uluslararası Posta", "Barkod:", "RR123456789TR", "Tarih: 10.03.2024"],
+    },
+    coklu: {
+      label: "2789396419841 (ilk alınır)",
+      spans: ["Birinci Barkod: 2789396419841", "İkinci Barkod: 9876543210123", "Üçüncü: RR999999999TR"],
+    },
+    yok: {
+      label: "— (yok)",
+      spans: ["Bu tebligatta barkod bulunmamaktadır.", "Dosya: 2024/99999", "Tarih: 01.01.2024"],
+    },
+  };
+
+  function loadScenario(key) {
+    // Tab butonları
+    document.querySelectorAll(".tab-btn").forEach((btn) => btn.classList.remove("active"));
+    event.target.classList.add("active");
+
+    const scenario = SCENARIOS[key];
+
+    // Görsel barkod güncelle
+    document.getElementById("visibleBarkod").textContent = scenario.label;
+    document.getElementById("domBarkodDisplay").textContent = scenario.spans.join(" | ");
+
+    // DOM span'larını güncelle (eklentinin okuyacağı yer burası)
+    const layer = document.getElementById("textLayer");
+    layer.innerHTML = "";
+    scenario.spans.forEach((text) => {
+      const span = document.createElement("span");
+      span.className = "rpv-core__text-layer-text";
+      span.textContent = text;
+      // Gerçek rpv'de font-size:0 olur ama biz görmek için küçük bırakalım
+      span.style.cssText = "font-size:11px; color:#bbb; display:inline-block; margin-right:4px;";
+      layer.appendChild(span);
+    });
+  }
+
+  // Sayfa açılışında varsayılan senaryoyu yükle
+  loadScenario("normal");
+</script>
+</body>
+</html>
