@@ -400,11 +400,57 @@
 
       /* ── Footer ──────────────────────────────────────── */
       .footer {
-        padding: 10px 20px;
-        text-align: center;
+        border-top: 1px solid #f1f3f5;
+      }
+
+      .footer-main {
+        padding: 8px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
         font-size: 10px;
         color: #adb5bd;
+      }
+
+      .footer-toggle {
+        background: none;
+        border: none;
+        font-size: 10px;
+        color: #adb5bd;
+        cursor: pointer;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        gap: 3px;
+      }
+
+      .footer-toggle:hover { color: #6c757d; }
+
+      .footer-disclaimer {
+        display: none;
+        background: #f8f9fa;
         border-top: 1px solid #f1f3f5;
+        padding: 10px 16px;
+      }
+
+      .footer-disclaimer.open { display: block; }
+
+      .disclaimer-item {
+        display: flex;
+        gap: 8px;
+        font-size: 10px;
+        color: #6c757d;
+        line-height: 1.5;
+        padding: 5px 0;
+        border-bottom: 1px solid #e9ecef;
+      }
+
+      .disclaimer-item:last-child { border-bottom: none; }
+
+      .disclaimer-icon {
+        flex-shrink: 0;
+        font-size: 11px;
+        margin-top: 1px;
       }
     </style>
   </head>
@@ -457,7 +503,28 @@
       </div>
     </div>
 
-    <div class="footer">Yalnızca uyap.gov.tr domaininde çalışır</div>
+    <div class="footer">
+      <div class="footer-main">
+        <span>Yalnızca uyap.gov.tr domaininde çalışır</span>
+        <button class="footer-toggle" id="disclaimerToggle">
+          Bilgilendirme <span id="disclaimerArrow">▸</span>
+        </button>
+      </div>
+      <div class="footer-disclaimer" id="footerDisclaimer">
+        <div class="disclaimer-item">
+          <span class="disclaimer-icon">📮</span>
+          <span>Yalnızca <strong>fiziki PTT tebligatları</strong> takip edilebilir. Elektronik tebligat (e-tebligat) bu araçla sorgulanamaz.</span>
+        </div>
+        <div class="disclaimer-item">
+          <span class="disclaimer-icon">⚠️</span>
+          <span>Bu eklenti resmi olmayan bir araçtır. Gösterilen bilgiler yalnızca bilgilendirme amaçlıdır; hukuki geçerliliği yoktur.</span>
+        </div>
+        <div class="disclaimer-item">
+          <span class="disclaimer-icon">🔒</span>
+          <span>Hiçbir kişisel veri toplanmaz veya saklanmaz. Barkod numarası yalnızca PTT'ye sorgu yapmak için kullanılır.</span>
+        </div>
+      </div>
+    </div>
 
     <script src="popup.js"></script>
   </body>

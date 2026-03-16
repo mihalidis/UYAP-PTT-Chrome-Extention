@@ -221,3 +221,10 @@ async function runQuery() {
 }
 
 elBtnQuery.addEventListener("click", runQuery);
+
+document.getElementById("disclaimerToggle").addEventListener("click", () => {
+  const panel = document.getElementById("footerDisclaimer");
+  const arrow = document.getElementById("disclaimerArrow");
+  const open  = panel.classList.toggle("open");
+  arrow.textContent = open ? "▾" : "▸";
+});
