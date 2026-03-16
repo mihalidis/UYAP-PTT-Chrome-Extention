@@ -19,7 +19,7 @@
         color: #212529;
       }
 
-      /* Header */
+      /* ── Header ─────────────────────────────────────── */
       .header {
         background: linear-gradient(135deg, #c0392b 0%, #922b21 100%);
         color: white;
@@ -53,12 +53,12 @@
         margin-top: 2px;
       }
 
-      /* Body */
+      /* ── Body ────────────────────────────────────────── */
       .body {
         padding: 16px 20px;
       }
 
-      /* Barkod göstergesi */
+      /* ── Barkod kartı ────────────────────────────────── */
       .barkod-card {
         background: white;
         border: 1px solid #e9ecef;
@@ -68,9 +68,7 @@
         display: none;
       }
 
-      .barkod-card.visible {
-        display: block;
-      }
+      .barkod-card.visible { display: block; }
 
       .barkod-label {
         font-size: 10px;
@@ -89,7 +87,7 @@
         font-family: "Courier New", monospace;
       }
 
-      /* Sorgula butonu */
+      /* ── Sorgula butonu ──────────────────────────────── */
       .btn-query {
         width: 100%;
         padding: 12px;
@@ -119,11 +117,9 @@
         transform: none;
       }
 
-      .btn-icon {
-        font-size: 16px;
-      }
+      .btn-icon { font-size: 16px; }
 
-      /* Loading spinner */
+      /* ── Spinner ─────────────────────────────────────── */
       .spinner {
         width: 16px;
         height: 16px;
@@ -134,140 +130,221 @@
         display: none;
       }
 
-      @keyframes spin {
-        to { transform: rotate(360deg); }
-      }
+      @keyframes spin { to { transform: rotate(360deg); } }
 
-      /* Durum kartı */
+      /* ── Sonuç kartı ─────────────────────────────────── */
       .result-card {
         background: white;
         border: 1px solid #e9ecef;
-        border-radius: 10px;
+        border-radius: 12px;
         overflow: hidden;
+        display: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      }
+
+      .result-card.visible { display: block; }
+
+      /* Status Banner — renkli tam genişlik blok */
+      .status-banner {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 16px 18px;
+        color: white;
+      }
+
+      .status-banner.green {
+        background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      }
+
+      .status-banner.yellow {
+        background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+      }
+
+      .status-banner.red {
+        background: #fff5f5;
+        color: #991b1b;
+        border-bottom: 1px solid #fecaca;
+      }
+
+      .status-banner.red .status-banner-icon-wrap {
+        background: #fee2e2;
+        color: #dc2626;
+      }
+
+      .status-banner.red .status-banner-label {
+        color: #991b1b;
+      }
+
+      .status-banner-icon-wrap {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        flex-shrink: 0;
+      }
+
+      .status-banner-label {
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: 0.2px;
+        line-height: 1.3;
+      }
+
+      .status-banner-date {
+        font-size: 11px;
+        opacity: 0.85;
+        margin-top: 3px;
+      }
+
+      /* ── Sonuç body ──────────────────────────────────── */
+      .result-body {
+        padding: 14px 16px;
+      }
+
+      .result-body:empty {
         display: none;
       }
 
-      .result-card.visible {
-        display: block;
+      /* Kabul bilgi kutusu */
+      .kabul-box {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 10px 12px;
+        margin-bottom: 10px;
       }
 
-      .result-header {
-        padding: 12px 14px;
-        border-bottom: 1px solid #f1f3f5;
+      .kabul-row {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         gap: 8px;
-      }
-
-      .status-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 4px 10px;
-        border-radius: 20px;
+        padding: 5px 0;
         font-size: 12px;
+        color: #495057;
+        border-bottom: 1px solid #e9ecef;
+      }
+
+      .kabul-row:last-child { border-bottom: none; }
+
+      .kabul-row-icon {
+        font-size: 13px;
+        flex-shrink: 0;
+        margin-top: 1px;
+        opacity: 0.7;
+      }
+
+      .kabul-row-label {
         font-weight: 600;
+        color: #6c757d;
+        min-width: 90px;
+        font-size: 11px;
       }
 
-      .status-badge.teslim {
-        background: #d4edda;
-        color: #155724;
+      .kabul-row-value {
+        color: #343a40;
+        font-weight: 500;
       }
 
-      .status-badge.yolda {
-        background: #fff3cd;
-        color: #856404;
-      }
-
-      .status-badge.bekliyor {
-        background: #d1ecf1;
-        color: #0c5460;
-      }
-
-      .status-badge.bilinmiyor {
-        background: #f8d7da;
-        color: #721c24;
-      }
-
-      .result-body {
-        padding: 12px 14px;
-      }
-
-      /* Hareket listesi */
-      .hareket-list {
-        list-style: none;
+      /* Hareketler timeline */
+      .timeline {
         position: relative;
+        margin-bottom: 10px;
+        padding-left: 4px;
       }
 
-      .hareket-list::before {
+      .timeline::before {
         content: "";
         position: absolute;
-        left: 7px;
-        top: 4px;
-        bottom: 4px;
+        left: 15px;
+        top: 20px;
+        bottom: 8px;
         width: 2px;
         background: #dee2e6;
-        border-radius: 2px;
       }
 
-      .hareket-item {
+      .timeline-item {
         display: flex;
-        gap: 12px;
+        gap: 10px;
         padding: 6px 0;
         position: relative;
       }
 
-      .hareket-dot {
-        width: 16px;
-        height: 16px;
+      .timeline-dot {
+        width: 14px;
+        height: 14px;
         border-radius: 50%;
         background: #dee2e6;
+        border: 2px solid white;
         flex-shrink: 0;
-        margin-top: 2px;
+        margin-top: 3px;
         position: relative;
         z-index: 1;
-        border: 2px solid white;
+        box-shadow: 0 0 0 1px #dee2e6;
       }
 
-      .hareket-item:first-child .hareket-dot {
-        background: #c0392b;
+      .timeline-item.first .timeline-dot {
+        background: #d97706;
+        box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.2);
+        width: 16px;
+        height: 16px;
+        margin-top: 2px;
       }
 
-      .hareket-content {
+      .timeline-content {
         flex: 1;
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 7px 10px;
       }
 
-      .hareket-durum {
+      .timeline-item.first .timeline-content {
+        background: #fffbeb;
+        border: 1px solid #fde68a;
+      }
+
+      .timeline-aciklama {
         font-size: 12px;
         font-weight: 600;
-        color: #343a40;
+        color: #212529;
+        line-height: 1.3;
       }
 
-      .hareket-meta {
+      .timeline-item.first .timeline-aciklama {
+        color: #92400e;
+      }
+
+      .timeline-isyeri {
         font-size: 11px;
         color: #6c757d;
-        margin-top: 1px;
+        margin-top: 2px;
       }
 
-      /* Ham metin (fallback) */
-      .ham-metin {
-        font-size: 11px;
-        color: #495057;
-        line-height: 1.5;
-        background: #f8f9fa;
-        padding: 10px;
-        border-radius: 6px;
-        margin-bottom: 8px;
+      .timeline-tarih {
+        font-size: 10px;
+        color: #adb5bd;
+        margin-top: 2px;
       }
 
-      /* PTT'de Gör butonu */
+      .timeline-detay {
+        font-size: 10px;
+        color: #868e96;
+        margin-top: 3px;
+        font-style: italic;
+        line-height: 1.4;
+      }
+
+      /* PTT linki */
       .btn-ptt {
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 6px;
         width: 100%;
-        padding: 8px;
+        padding: 9px;
         background: #f8f9fa;
         border: 1px solid #dee2e6;
         border-radius: 8px;
@@ -276,15 +353,16 @@
         font-weight: 500;
         text-decoration: none;
         cursor: pointer;
-        transition: background 0.15s;
-        margin-top: 8px;
+        transition: background 0.15s, border-color 0.15s;
+        margin-top: 4px;
       }
 
       .btn-ptt:hover {
         background: #e9ecef;
+        border-color: #ced4da;
       }
 
-      /* Hata mesajı */
+      /* ── Hata kutusu ─────────────────────────────────── */
       .error-box {
         background: #fff5f5;
         border: 1px solid #fed7d7;
@@ -297,16 +375,18 @@
       }
 
       .error-box.visible {
-        display: block;
+        display: flex;
+        align-items: center;
+        gap: 8px;
       }
 
-      .error-icon {
-        font-size: 16px;
-        margin-bottom: 6px;
-      }
+      .error-icon { font-size: 16px; }
 
-      /* Bilgi mesajı (başlangıç) */
+      /* ── Bilgi kutusu ────────────────────────────────── */
       .info-box {
+        display: flex;
+        align-items: center;
+        gap: 12px;
         background: #fffbeb;
         border: 1px solid #fde68a;
         border-radius: 10px;
@@ -314,14 +394,11 @@
         color: #92400e;
         font-size: 12px;
         line-height: 1.5;
-        text-align: center;
       }
 
-      .info-box .info-icon {
-        font-size: 24px;
-        margin-bottom: 6px;
-      }
+      .info-box .info-icon { font-size: 24px; }
 
+      /* ── Footer ──────────────────────────────────────── */
       .footer {
         padding: 10px 20px;
         text-align: center;
@@ -369,11 +446,12 @@
 
       <!-- Sonuç kartı -->
       <div class="result-card" id="resultCard">
-        <div class="result-header">
-          <span class="status-badge bilinmiyor" id="statusBadge">
-            <span id="statusIcon">●</span>
-            <span id="statusText">Sorgulanıyor...</span>
-          </span>
+        <div class="status-banner" id="statusBanner">
+          <div class="status-banner-icon-wrap" id="statusIcon">●</div>
+          <div>
+            <div class="status-banner-label" id="statusText">Sorgulanıyor…</div>
+            <div class="status-banner-date" id="statusDate"></div>
+          </div>
         </div>
         <div class="result-body" id="resultBody"></div>
       </div>

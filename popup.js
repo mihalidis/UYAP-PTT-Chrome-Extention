@@ -1,19 +1,20 @@
 // popup.js — UYAP Tebligat PTT Takip eklentisi
 
-const elBtnQuery    = document.getElementById("btnQuery");
-const elBtnText     = document.getElementById("btnText");
-const elSpinner     = document.getElementById("spinner");
-const elBtnIcon     = document.querySelector(".btn-icon");
-const elBarkodCard  = document.getElementById("barkodCard");
-const elBarkodVal   = document.getElementById("barkodValue");
-const elInfoBox     = document.getElementById("infoBox");
-const elErrorBox    = document.getElementById("errorBox");
-const elErrorText   = document.getElementById("errorText");
-const elResultCard  = document.getElementById("resultCard");
-const elStatusBadge = document.getElementById("statusBadge");
-const elStatusIcon  = document.getElementById("statusIcon");
-const elStatusText  = document.getElementById("statusText");
-const elResultBody  = document.getElementById("resultBody");
+const elBtnQuery   = document.getElementById("btnQuery");
+const elBtnText    = document.getElementById("btnText");
+const elSpinner    = document.getElementById("spinner");
+const elBtnIcon    = document.querySelector(".btn-icon");
+const elBarkodCard = document.getElementById("barkodCard");
+const elBarkodVal  = document.getElementById("barkodValue");
+const elInfoBox    = document.getElementById("infoBox");
+const elErrorBox   = document.getElementById("errorBox");
+const elErrorText  = document.getElementById("errorText");
+const elResultCard = document.getElementById("resultCard");
+const elStatusBanner = document.getElementById("statusBanner");
+const elStatusIcon   = document.getElementById("statusIcon");
+const elStatusText   = document.getElementById("statusText");
+const elStatusDate   = document.getElementById("statusDate");
+const elResultBody   = document.getElementById("resultBody");
 
 // --- State helpers ---
 function showLoading() {
@@ -44,62 +45,31 @@ function showResult(data) {
   renderResult(data);
 }
 
-// --- PTT durum badge ---
-function classifyStatus(durum) {
-  if (!durum) return { cls: "bilinmiyor", icon: "●", label: "Bilgi Alınamadı" };
-  const d = durum.toLowerCase();
-  if (d.includes("teslim") && !d.includes("teslim edilemedi")) {
-    return { cls: "teslim", icon: "✓", label: "Teslim Edildi" };
-  }
-  if (d.includes("dağıtım") || d.includes("yolda") || d.includes("transit") || d.includes("aktarım")) {
-    return { cls: "yolda", icon: "🚚", label: "Yolda" };
-  }
-  if (d.includes("bekli") || d.includes("şube") || d.includes("işyeri") || d.includes("merkez")) {
-    return { cls: "bekliyor", icon: "📦", label: "Şubede Bekliyor" };
-  }
-  return { cls: "bilinmiyor", icon: "●", label: durum.slice(0, 35) };
-}
-
+// --- Render ---
 function renderResult(data) {
-  const status = classifyStatus(data.sonDurum);
-  elStatusBadge.className = `status-badge ${status.cls}`;
-  elStatusIcon.textContent = status.icon;
-  elStatusText.textContent = status.label;
+  const { statusColor, durumAciklama, durumTarihi } = data;
+
+  // Banner rengi + ikon + metin
+  const bannerConfig = {
+    green:  { icon: "✓",  label: durumAciklama || "Teslim Edildi" },
+    yellow: { icon: "📦", label: durumAciklama || "İşlemde" },
+    red:    { icon: "✕",  label: durumAciklama || "Gönderi bulunamadı" },
+  };
+  const cfg = bannerConfig[statusColor] || bannerConfig.yellow;
+
+  elStatusBanner.className = `status-banner ${statusColor}`;
+  elStatusIcon.textContent  = cfg.icon;
+  elStatusText.textContent  = cfg.label;
+  elStatusDate.textContent  = durumTarihi ? formatTarih(durumTarihi) : "";
 
   elResultBody.innerHTML = "";
 
-  // Kabul bilgisi (gönderici / alıcı / şube)
-  const k = data.kabul;
-  if (k && (k.gonderici || k.alici || k.kabulIsyeri)) {
-    const infoDiv = document.createElement("div");
-    infoDiv.style.cssText = "font-size:11px;color:#495057;margin-bottom:10px;line-height:1.7;background:#f8f9fa;padding:8px 10px;border-radius:6px";
-    if (k.gonderici)   infoDiv.innerHTML += `<b>Gönderici:</b> ${escapeHtml(k.gonderici)}<br>`;
-    if (k.alici)       infoDiv.innerHTML += `<b>Alıcı:</b> ${escapeHtml(k.alici)}<br>`;
-    if (k.kabulIsyeri) infoDiv.innerHTML += `<b>Kabul Şubesi:</b> ${escapeHtml(k.kabulIsyeri)}`;
-    elResultBody.appendChild(infoDiv);
-  }
+  if (statusColor === "red") return; // sadece banner yeterli
 
-  if (data.hareketler && data.hareketler.length > 0) {
-    const ul = document.createElement("ul");
-    ul.className = "hareket-list";
-    data.hareketler.forEach((h) => {
-      const li = document.createElement("li");
-      li.className = "hareket-item";
-      li.innerHTML = `
-        <div class="hareket-dot"></div>
-        <div class="hareket-content">
-          <div class="hareket-durum">${escapeHtml(h.durum)}</div>
-          <div class="hareket-meta">${escapeHtml(h.tarih)}${h.konum ? " · " + escapeHtml(h.konum) : ""}</div>
-        </div>
-      `;
-      ul.appendChild(li);
-    });
-    elResultBody.appendChild(ul);
+  if (statusColor === "green") {
+    renderKabulBox(data.kabul);
   } else {
-    const noData = document.createElement("p");
-    noData.style.cssText = "font-size:12px;color:#6c757d;text-align:center;padding:8px 0";
-    noData.textContent = "Henüz hareket kaydı bulunmuyor.";
-    elResultBody.appendChild(noData);
+    renderTimeline(data.hareketler);
   }
 
   if (data.pttUrl) {
@@ -113,6 +83,80 @@ function renderResult(data) {
     });
     elResultBody.appendChild(link);
   }
+}
+
+function renderKabulBox(k) {
+  if (!k || (!k.gonderici && !k.alici && !k.kabulIsyeri && !k.kabulTarihi)) return;
+
+  const box = document.createElement("div");
+  box.className = "kabul-box";
+
+  const rows = [
+    { icon: "👤", label: "Gönderici",    value: k.gonderici },
+    { icon: "📬", label: "Alıcı",        value: k.alici },
+    { icon: "🏪", label: "Kabul Şubesi", value: k.kabulIsyeri },
+    { icon: "📅", label: "Kabul Tarihi", value: k.kabulTarihi ? formatTarih(String(k.kabulTarihi)) : "" },
+  ];
+
+  rows.forEach(({ icon, label, value }) => {
+    if (!value) return;
+    const row = document.createElement("div");
+    row.className = "kabul-row";
+    row.innerHTML = `
+      <span class="kabul-row-icon">${icon}</span>
+      <span class="kabul-row-label">${label}</span>
+      <span class="kabul-row-value">${escapeHtml(value)}</span>
+    `;
+    box.appendChild(row);
+  });
+
+  elResultBody.appendChild(box);
+}
+
+function renderTimeline(hareketler) {
+  if (!hareketler || hareketler.length === 0) return;
+
+  const timeline = document.createElement("div");
+  timeline.className = "timeline";
+
+  const reversed = [...hareketler].reverse();
+  reversed.forEach((h, i) => {
+    const item = document.createElement("div");
+    item.className = "timeline-item" + (i === 0 ? " first" : "");
+
+    const dot = document.createElement("div");
+    dot.className = "timeline-dot";
+
+    const content = document.createElement("div");
+    content.className = "timeline-content";
+
+    const detayHtml = h.islemDetay
+      ? `<div class="timeline-detay">${escapeHtml(h.islemDetay)}</div>`
+      : "";
+
+    content.innerHTML = `
+      <div class="timeline-aciklama">${escapeHtml(h.aciklama)}</div>
+      <div class="timeline-isyeri">${escapeHtml(h.isyeri)}</div>
+      <div class="timeline-tarih">${escapeHtml(h.tarih)} · ${escapeHtml(h.saat)}</div>
+      ${detayHtml}
+    `;
+
+    item.appendChild(dot);
+    item.appendChild(content);
+    timeline.appendChild(item);
+  });
+
+  elResultBody.appendChild(timeline);
+}
+
+// "20260316" → "16.03.2026"
+function formatTarih(raw) {
+  if (!raw || raw === "0") return "";
+  const s = String(raw);
+  if (s.length === 8) {
+    return `${s.slice(6, 8)}.${s.slice(4, 6)}.${s.slice(0, 4)}`;
+  }
+  return s;
 }
 
 function escapeHtml(str) {
@@ -139,7 +183,6 @@ async function runQuery() {
     return;
   }
 
-  // Barkodu oku
   let barkodResult;
   try {
     barkodResult = await chrome.tabs.sendMessage(tab.id, { type: "GET_BARKOD" });
@@ -165,7 +208,6 @@ async function runQuery() {
   elBarkodCard.classList.add("visible");
   elBarkodVal.textContent = barkodNo;
 
-  // PTT API'ye sorgula
   const pttResult = await chrome.runtime.sendMessage({ type: "QUERY_PTT", barkodNo });
 
   hideLoading();

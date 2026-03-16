@@ -237,6 +237,153 @@
   (aşağıda açıklanmış).
 </div>
 
+<!-- PTT Sonuç Görünümü Örnekleri -->
+<h2 style="margin-top:40px">📊 PTT Sonuç Görünümü Örnekleri</h2>
+<p class="desc">Eklentinin popup'ında her status için nasıl görüneceğini gösteren statik örnekler.</p>
+
+<div style="display:flex;gap:20px;flex-wrap:wrap;max-width:820px">
+
+  <!-- YEŞIL: Teslim Edildi -->
+  <div class="mock-popup">
+    <div class="mock-barkod-card">
+      <div class="mock-label">TESPİT EDİLEN BARKOD NO</div>
+      <div class="mock-barkod">4007491459047</div>
+    </div>
+    <div class="mock-status-badge teslim">
+      <span>✓</span> TESLİM EDİLDİ
+    </div>
+    <div class="mock-tarih">16.03.2026</div>
+    <div class="mock-info-box">
+      <b>Gönderici:</b> M******* İ***<br>
+      <b>Alıcı:</b> O**** K*****<br>
+      <b>Kabul Şubesi:</b> MANAVGAT
+    </div>
+    <a class="mock-ptt-btn">🔗 PTT sitesinde görüntüle</a>
+    <div class="mock-caption">✅ statusColor: "green" — teslim_durum_aciklama dolu</div>
+  </div>
+
+  <!-- SARI: İşlemde / Hareketler -->
+  <div class="mock-popup">
+    <div class="mock-barkod-card">
+      <div class="mock-label">TESPİT EDİLEN BARKOD NO</div>
+      <div class="mock-barkod">4007491459047</div>
+    </div>
+    <div class="mock-status-badge yolda">
+      <span>📦</span> DAĞITIMDA
+    </div>
+    <div class="mock-hareket-list">
+      <div class="mock-hareket even"><span class="dot">•</span><div><b>DAĞITIMDA</b> — FATİH PDM<br><span class="zaman">16/03/2026 08:35:53</span></div></div>
+      <div class="mock-hareket odd"><span class="dot">•</span><div><b>İL İÇİ AKTARMADA</b> — FATİH PDM<br><span class="zaman">16/03/2026 07:21:39</span></div></div>
+      <div class="mock-hareket even"><span class="dot">•</span><div><b>İL İÇİ AKTARMADA</b> — AVRUPA YAKASI PİM<br><span class="zaman">14/03/2026 10:59:04</span></div></div>
+      <div class="mock-hareket odd"><span class="dot">•</span><div><b>TRANSFER SÜRECİNDE</b> — MANAVGAT<br><span class="zaman">13/03/2026 13:55:09</span></div></div>
+      <div class="mock-hareket even"><span class="dot">•</span><div><b>KABUL EDİLDİ</b> — MANAVGAT<br><span class="zaman">13/03/2026 10:43:32</span></div></div>
+    </div>
+    <a class="mock-ptt-btn">🔗 PTT sitesinde görüntüle</a>
+    <div class="mock-caption">🟡 statusColor: "yellow" — teslim_durum_aciklama boş</div>
+  </div>
+
+  <!-- HATA -->
+  <div class="mock-popup">
+    <div class="mock-barkod-card">
+      <div class="mock-label">TESPİT EDİLEN BARKOD NO</div>
+      <div class="mock-barkod">9999999999999</div>
+    </div>
+    <div class="mock-error-box">
+      ⚠️ PTT'den gönderi bilgisi alınamadı.
+    </div>
+    <div class="mock-caption">❌ success: false — gönderi bulunamadı</div>
+  </div>
+
+</div>
+
+<style>
+  .mock-popup {
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+    width: 260px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    font-family: "Segoe UI", sans-serif;
+    font-size: 12px;
+  }
+  .mock-barkod-card {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin-bottom: 10px;
+  }
+  .mock-label { font-size: 10px; color: #6c757d; font-weight: 600; letter-spacing: .5px; text-transform: uppercase; }
+  .mock-barkod { font-size: 15px; font-weight: 700; color: #c0392b; letter-spacing: 1px; margin-top: 4px; }
+  .mock-status-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+  .mock-status-badge.teslim { background: #d1fae5; color: #065f46; }
+  .mock-status-badge.yolda  { background: #fef3c7; color: #92400e; }
+  .mock-tarih {
+    font-size: 11px;
+    color: #6c757d;
+    text-align: center;
+    margin-bottom: 8px;
+  }
+  .mock-info-box {
+    background: #f8f9fa;
+    border-radius: 6px;
+    padding: 8px 10px;
+    line-height: 1.7;
+    color: #495057;
+    margin-bottom: 8px;
+  }
+  .mock-hareket-list { margin-bottom: 8px; }
+  .mock-hareket {
+    display: flex;
+    gap: 8px;
+    padding: 5px 8px;
+    border-radius: 6px;
+    line-height: 1.5;
+    color: #495057;
+  }
+  .mock-hareket.even { background: #f8f9fa; }
+  .mock-hareket.odd  { background: #fff; }
+  .mock-hareket .dot { color: #f59e0b; font-size: 14px; line-height: 1.2; flex-shrink: 0; }
+  .mock-hareket .zaman { color: #adb5bd; font-size: 10px; }
+  .mock-ptt-btn {
+    display: block;
+    background: #c0392b;
+    color: white;
+    text-align: center;
+    padding: 8px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    cursor: default;
+  }
+  .mock-error-box {
+    background: #fff5f5;
+    border: 1px solid #fca5a5;
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: #b91c1c;
+    margin-bottom: 8px;
+  }
+  .mock-caption {
+    font-size: 10px;
+    color: #6c757d;
+    border-top: 1px solid #f0f0f0;
+    padding-top: 6px;
+    margin-top: 4px;
+  }
+</style>
+
 <script>
   const SCENARIOS = {
     normal: {

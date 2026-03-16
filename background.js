@@ -1,6 +1,4 @@
 // Background service worker
-// PTT gönderi takip sorgusu — CORS engelini aşmak için service worker üzerinden yapılır.
-
 const PTT_API_URL = "https://api.ptt.gov.tr/api/ShipmentTracking";
 const PTT_WEB_URL = "https://gonderitakip.ptt.gov.tr/Track/Verify?q=";
 
@@ -48,30 +46,50 @@ function parseAPIResponse(data, barkodNo) {
     return { success: false, error: "PTT'den gönderi bilgisi alınamadı." };
   }
 
-  // PTT hata durumu
-  if (shipment.errorState) {
+  // hareketDongu null ise gönderi bulunamadı — errorMessage'ı hata olarak döndür
+  if (shipment.hareketDongu === null) {
     const msg = shipment.errorMessage || "Gönderi bulunamadı.";
-    return { success: false, error: `PTT: ${msg}` };
+    return {
+      success: true,
+      barkodNo,
+      durumAciklama: msg,
+      durumTarihi: "",
+      statusColor: "red",
+      hareketler: [],
+      kabul: {},
+      pttUrl: PTT_WEB_URL + encodeURIComponent(barkodNo),
+    };
   }
-
-  // Hareket listesi — hareketDongu array'i
-  const rawHareketler = Array.isArray(shipment.hareketDongu) ? shipment.hareketDongu : [];
-
-  const hareketler = rawHareketler.map((h) => ({
-    tarih: h.islem_tarihi || h.tarih || "",
-    durum: h.durum_aciklama || h.durum || "",
-    konum: h.isyeri_adi || h.konum || "",
-  }));
 
   // Son durum — sondurum nesnesinden
   const sd = shipment.sondurum || {};
-  const sonDurum =
-    sd.teslim_durum_aciklama ||
-    sd.son_durum_aciklama ||
-    sd.mazb_durum_aciklama ||
-    sd.sozl_durum_aciklama ||
-    sd.ahk_durum_aciklama ||
-    (hareketler.length > 0 ? hareketler[0].durum : null);
+
+  const teslimEdildi =
+    !!sd.teslim_durum_aciklama &&
+    sd.teslim_durum_aciklama.trim() !== "" &&
+    sd.teslim_tarihi !== "0" &&
+    !!sd.teslim_tarihi;
+
+  const durumAciklama = teslimEdildi
+    ? sd.teslim_durum_aciklama
+    : sd.son_durum_aciklama || "";
+
+  const durumTarihi = teslimEdildi
+    ? sd.teslim_tarihi
+    : sd.son_islem_tarihi || "";
+
+  const statusColor = teslimEdildi ? "green" : "yellow";
+
+  // Hareketler — sadece teslim edilmemiş gönderilerde gösterilir
+  const hareketler = teslimEdildi
+    ? []
+    : (shipment.hareketDongu || []).map((h) => ({
+        aciklama:   h.aciklama || "",
+        tarih:      h.tarih || "",
+        saat:       h.saat || "",
+        isyeri:     h.isyeri || "",
+        islemDetay: (h.islem_detay || "").trim(),
+      }));
 
   // Kabul bilgisi
   const kabul = shipment.kabul || {};
@@ -79,13 +97,15 @@ function parseAPIResponse(data, barkodNo) {
   return {
     success: true,
     barkodNo: kabul.barkod_no || barkodNo,
-    sonDurum,
+    durumAciklama,
+    durumTarihi,
+    statusColor,
     hareketler,
     kabul: {
-      gonderici:    kabul.gonderici || "",
-      alici:        kabul.alici || "",
-      kabulIsyeri:  kabul.kabul_isyeri || "",
-      kabulTarihi:  kabul.kabul_tarihi || "",
+      gonderici:   kabul.gonderici    || "",
+      alici:       kabul.alici        || "",
+      kabulIsyeri: kabul.kabul_isyeri || "",
+      kabulTarihi: kabul.kabul_tarihi || "",
     },
     pttUrl: PTT_WEB_URL + encodeURIComponent(barkodNo),
   };
