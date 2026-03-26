@@ -80,16 +80,14 @@ function parseAPIResponse(data, barkodNo) {
 
   const statusColor = teslimEdildi ? "green" : "yellow";
 
-  // Hareketler — sadece teslim edilmemiş gönderilerde gösterilir
-  const hareketler = teslimEdildi
-    ? []
-    : (shipment.hareketDongu || []).map((h) => ({
-        aciklama:   h.aciklama || "",
-        tarih:      h.tarih || "",
-        saat:       h.saat || "",
-        isyeri:     h.isyeri || "",
-        islemDetay: (h.islem_detay || "").trim(),
-      }));
+  // Hareketler
+  const hareketler = (shipment.hareketDongu || []).map((h) => ({
+    aciklama:   h.aciklama || "",
+    tarih:      h.tarih || "",
+    saat:       h.saat || "",
+    isyeri:     h.isyeri || "",
+    islemDetay: (h.islem_detay || "").trim(),
+  }));
 
   // Kabul bilgisi
   const kabul = shipment.kabul || {};

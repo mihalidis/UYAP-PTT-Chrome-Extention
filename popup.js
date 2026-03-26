@@ -68,6 +68,7 @@ function renderResult(data) {
 
   if (statusColor === "green") {
     renderKabulBox(data.kabul);
+    renderCollapsibleTimeline(data.hareketler);
   } else {
     renderTimeline(data.hareketler);
   }
@@ -147,6 +148,55 @@ function renderTimeline(hareketler) {
   });
 
   elResultBody.appendChild(timeline);
+}
+
+function renderCollapsibleTimeline(hareketler) {
+  if (!hareketler || hareketler.length === 0) return;
+
+  const wrapper = document.createElement("div");
+  wrapper.className = "collapsible-timeline";
+
+  const toggle = document.createElement("button");
+  toggle.className = "timeline-toggle";
+  toggle.innerHTML = `<span class="timeline-toggle-icon">▸</span> Gönderi Hareketleri (${hareketler.length})`;
+  wrapper.appendChild(toggle);
+
+  const content = document.createElement("div");
+  content.className = "timeline-toggle-content";
+  wrapper.appendChild(content);
+
+  toggle.addEventListener("click", () => {
+    const open = content.classList.toggle("open");
+    toggle.querySelector(".timeline-toggle-icon").textContent = open ? "▾" : "▸";
+    if (open && content.childElementCount === 0) {
+      const timeline = document.createElement("div");
+      timeline.className = "timeline";
+      const reversed = [...hareketler].reverse();
+      reversed.forEach((h, i) => {
+        const item = document.createElement("div");
+        item.className = "timeline-item" + (i === 0 ? " first" : "");
+        const dot = document.createElement("div");
+        dot.className = "timeline-dot";
+        const cont = document.createElement("div");
+        cont.className = "timeline-content";
+        const detayHtml = h.islemDetay
+          ? `<div class="timeline-detay">${escapeHtml(h.islemDetay)}</div>`
+          : "";
+        cont.innerHTML = `
+          <div class="timeline-aciklama">${escapeHtml(h.aciklama)}</div>
+          <div class="timeline-isyeri">${escapeHtml(h.isyeri)}</div>
+          <div class="timeline-tarih">${escapeHtml(h.tarih)} · ${escapeHtml(h.saat)}</div>
+          ${detayHtml}
+        `;
+        item.appendChild(dot);
+        item.appendChild(cont);
+        timeline.appendChild(item);
+      });
+      content.appendChild(timeline);
+    }
+  });
+
+  elResultBody.appendChild(wrapper);
 }
 
 // "20260316" → "16.03.2026"

@@ -337,6 +337,47 @@
         line-height: 1.4;
       }
 
+      /* Açılır kapanır timeline (teslim edilmiş gönderiler) */
+      .collapsible-timeline {
+        margin-bottom: 10px;
+      }
+
+      .timeline-toggle {
+        width: 100%;
+        padding: 9px 12px;
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        color: #495057;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        text-align: left;
+        transition: background 0.15s, border-color 0.15s;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .timeline-toggle:hover {
+        background: #e9ecef;
+        border-color: #ced4da;
+      }
+
+      .timeline-toggle-icon {
+        font-size: 10px;
+        transition: transform 0.2s;
+      }
+
+      .timeline-toggle-content {
+        display: none;
+        margin-top: 8px;
+      }
+
+      .timeline-toggle-content.open {
+        display: block;
+      }
+
       /* PTT linki */
       .btn-ptt {
         display: flex;
@@ -480,8 +521,8 @@
       <!-- Başlangıç bilgi kutusu -->
       <div class="info-box" id="infoBox">
         <div class="info-icon">ℹ️</div>
-        UYAP üzerinde bir tebligat belgesi açıkken butona basın.
-        Barkod numarası otomatik okunacak ve PTT'den sorgulanacak.
+        Tebligat belgenizi UYAP'ta açtıktan sonra yukarıdaki butona tıklamanız yeterli. Barkod otomatik okunur, PTT kargo durumu anında
+        sorgulanır."
       </div>
 
       <!-- Hata kutusu -->
