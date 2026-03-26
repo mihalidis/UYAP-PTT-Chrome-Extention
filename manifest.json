@@ -9,7 +9,11 @@
   ],
   "host_permissions": [
     "https://*.uyap.gov.tr/*",
-    "https://*.ptt.gov.tr/*"
+    "https://gonderitakip.ptt.gov.tr/*",
+    "https://*.ptt.gov.tr/*",
+    "https://api.ptt.gov.tr/*",
+    "http://localhost/*",
+    "file://*/*"
   ],
   "action": {
     "default_popup": "popup.html",
@@ -22,7 +26,9 @@
   "content_scripts": [
     {
       "matches": [
-        "https://*.uyap.gov.tr/*"
+        "https://*.uyap.gov.tr/*",
+        "http://localhost/*",
+        "file://*/*"
       ],
       "js": ["content.js"]
     }
