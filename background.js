@@ -9,6 +9,11 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     });
     return true; // async
   }
+
+  if (message.type === "OPEN_PTT_PAGE") {
+    openPttAndAutoQuery(message.url, message.barkodNo);
+    return false;
+  }
 });
 
 async function queryPTT(barkodNo) {
@@ -107,4 +112,57 @@ function parseAPIResponse(data, barkodNo) {
     },
     pttUrl: PTT_WEB_URL + encodeURIComponent(barkodNo),
   };
+}
+
+// PTT sayfasını aç, yüklendikten sonra barkodu input'a yaz ve sorgulat
+function openPttAndAutoQuery(url, barkodNo) {
+  chrome.tabs.create({ url }, (tab) => {
+    const tabId = tab.id;
+
+    function onUpdated(updatedTabId, changeInfo) {
+      if (updatedTabId !== tabId || changeInfo.status !== "complete") return;
+      chrome.tabs.onUpdated.removeListener(onUpdated);
+
+      chrome.scripting.executeScript({
+        target: { tabId },
+        args: [barkodNo],
+        func: (barcode) => {
+          function tryFill() {
+            const input = document.querySelector('input[name="value"]');
+            if (!input) return false;
+
+            // React uygulaması — native setter ile değeri set et
+            const nativeSetter = Object.getOwnPropertyDescriptor(
+              HTMLInputElement.prototype, "value"
+            ).set;
+            nativeSetter.call(input, barcode);
+            input.dispatchEvent(new Event("input", { bubbles: true }));
+            input.dispatchEvent(new Event("change", { bubbles: true }));
+
+            // "SORGULA" butonunu bul ve tıkla
+            const parent = input.closest("div");
+            const btn = parent
+              ? parent.querySelector("button")
+              : document.querySelector("button");
+
+            if (btn) {
+              setTimeout(() => btn.click(), 300);
+            }
+            return true;
+          }
+
+          // Sayfa React ile render olabilir, DOM hazır olmayabilir — retry
+          if (!tryFill()) {
+            let attempts = 0;
+            const interval = setInterval(() => {
+              attempts++;
+              if (tryFill() || attempts >= 20) clearInterval(interval);
+            }, 500);
+          }
+        },
+      });
+    }
+
+    chrome.tabs.onUpdated.addListener(onUpdated);
+  });
 }

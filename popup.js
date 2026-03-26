@@ -80,7 +80,11 @@ function renderResult(data) {
     link.innerHTML = "🔗 PTT sitesinde görüntüle";
     link.addEventListener("click", (e) => {
       e.preventDefault();
-      chrome.tabs.create({ url: data.pttUrl });
+      chrome.runtime.sendMessage({
+        type: "OPEN_PTT_PAGE",
+        url: data.pttUrl,
+        barkodNo: data.barkodNo,
+      });
     });
     elResultBody.appendChild(link);
   }

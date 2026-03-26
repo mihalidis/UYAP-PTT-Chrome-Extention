@@ -10,7 +10,7 @@
   "host_permissions": [
     "https://*.uyap.gov.tr/*",
     "https://gonderitakip.ptt.gov.tr/*",
-    "https://track.ptt.gov.tr/*",
+    "https://*.ptt.gov.tr/*",
     "https://api.ptt.gov.tr/*",
     "http://localhost/*",
     "file://*/*"
